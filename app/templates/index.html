@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GibbsCluster 2.0 - Local Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c5aa0;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .description {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f0f7ff;
+            border-left: 4px solid #2c5aa0;
+            color: #333;
+        }
+        
+        .section-title {
+            background: #2c5aa0;
+            color: white;
+            padding: 10px 15px;
+            margin: 25px 0 15px 0;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .preset-buttons {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            background: #5cb85c;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #4cae4c;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .label-with-help {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .help-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #2c5aa0;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            line-height: 16px;
+            cursor: help;
+            font-weight: bold;
+        }
+        
+        .help-icon:hover {
+            background: #1e4278;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        
+        input[type="file"],
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .inline-input {
+            width: auto;
+            display: inline-block;
+            min-width: 100px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .radio-group label {
+            font-weight: normal;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .submit-btn {
+            background: #2c5aa0;
+            color: white;
+            padding: 12px 40px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background: #1e4278;
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #2c5aa0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c5aa0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .error {
+            color: #d9534f;
+            padding: 15px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .output-section {
+            margin-top: 20px;
+        }
+        
+        .output-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .collapsible {
+            background: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .collapsible:hover {
+            background: #ddd;
+        }
+        
+        .collapsible-content {
+            padding: 0 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GibbsCluster 2.0</h1>
+        <p class="subtitle">Simultaneous alignment and clustering of peptide data</p>
+        
+        <div class="description">
+            <strong>GibbsCluster</strong> is a tool for unsupervised alignment and clustering of peptide sequences. 
+            The program takes as input a list of peptide sequences and attempts to cluster them into meaningful groups.
+            <br><strong>Update (Nov 2016):</strong> Implements deletions and insertions in the sequence alignment.
+        </div>
+        
+        <form id="gibbsForm">
+            <div class="section-title">DATA SUBMISSION</div>
+            
+            <div class="form-group">
+                <label for="sequence_data">Paste peptides in the box:</label>
+                <textarea id="sequence_data" name="sequence_data" rows="10" placeholder="Paste FASTA formatted sequences here..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="sequence_file">Or submit a file directly from your local disk:</label>
+                <input type="file" id="sequence_file" name="sequence_file" accept=".fasta,.fa,.txt">
+            </div>
+            
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn" onclick="loadPresetMHC1Same()">MHC class I ligands of same length</button>
+                <button type="button" class="preset-btn" onclick="loadPresetMHC1Variable()">MHC class I ligands of length 8-13</button>
+                <button type="button" class="preset-btn" onclick="loadPresetMHC2()">MHC class II ligands</button>
+            </div>
+            
+            <div class="section-title">BASIC OPTIONS</div>
+            
+            <div class="form-group">
+                <label for="job_name">
+                    <span class="label-with-help">
+                        Job name
+                        <span class="help-icon" title="Name for your analysis job">?</span>
+                    </span>
+                </label>
+                <input type="text" id="job_name" name="job_name" value="GibbsCluster_Job">
+            </div>
+            
+            <div class="form-group">
+                <label for="num_clusters">
+                    <span class="label-with-help">
+                        Number of clusters
+                        <span class="help-icon" title="Number of groups to cluster sequences into">?</span>
+                    </span>
+                </label>
+                <input type="number" id="num_clusters" name="num_clusters" value="5" min="1" max="50">
+            </div>
+            
+            <div class="form-group">
+                <label for="motif_length">
+                    <span class="label-with-help">
+                        Motif length
+                        <span class="help-icon" title="Length of the core motif to identify">?</span>
+                    </span>
+                </label>
+                <input type="number" id="motif_length" name="motif_length" value="9" min="5" max="15">
+            </div>
+            
+            <div class="section-title">ADVANCED OPTIONS</div>
+            
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="clustering_moves" name="clustering_moves" checked>
+                <label for="clustering_moves" style="margin-bottom: 0;">
+                    <span class="label-with-help">
+                        Make clustering moves at each iteration
+                        <span class="help-icon" title="Allow sequences to switch clusters during optimization">?</span>
+                    </span>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label for="max_deletion">
+                    <span class="label-with-help">
+                        Max deletion length
+                        <span class="help-icon" title="Maximum number of amino acids that can be deleted in alignment">?</span>
+                    </span>
+                </label>
+                <input type="number" id="max_deletion" name="max_deletion" value="0" min="0" max="3">
+            </div>
+            
+            <div class="form-group">
+                <label for="max_insertion">
+                    <span class="label-with-help">
+                        Max insertion length
+                        <span class="help-icon" title="Maximum number of amino acids that can be inserted in alignment">?</span>
+                    </span>
+                </label>
+                <input type="number" id="max_insertion" name="max_insertion" value="0" min="0" max="3">
+            </div>
+            
+            <div class="form-group">
+                <label for="num_seeds">
+                    <span class="label-with-help">
+                        Number of seeds for initial conditions
+                        <span class="help-icon" title="Number of random starting points to try">?</span>
+                    </span>
+                </label>
+                <input type="number" id="num_seeds" name="num_seeds" value="5" min="1" max="20">
+            </div>
+            
+            <div class="form-group">
+                <label for="lambda_penalty">
+                    <span class="label-with-help">
+                        Penalty factor for inter-cluster similarity (λ)
+                        <span class="help-icon" title="Higher values penalize similar clusters more">?</span>
+                    </span>
+                </label>
+                <input type="number" id="lambda_penalty" name="lambda_penalty" value="1.0" step="0.1" min="0" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="sigma_weight">
+                    <span class="label-with-help">
+                        Weight on small clusters (σ)
+                        <span class="help-icon" title="Higher values favor creating small clusters">?</span>
+                    </span>
+                </label>
+                <input type="number" id="sigma_weight" name="sigma_weight" value="1.0" step="0.1" min="0" max="10">
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="use_trash" name="use_trash" checked>
+                <label for="use_trash" style="margin-bottom: 0;">
+                    <span class="label-with-help">
+                        Use trash cluster to remove outliers
+                        <span class="help-icon" title="Create a trash cluster for sequences that don't fit well">?</span>
+                    </span>
+                </label>
+            </div>
+            
+            <button type="button" class="collapsible">▼ VERY ADVANCED OPTIONS</button>
+            <div class="collapsible-content" id="advancedOptions">
+                <div style="padding: 15px 0;">
+                    <div class="form-group">
+                        <label for="iterations_per_temp">
+                            <span class="label-with-help">
+                                Number of iterations per sequence per temperature step
+                                <span class="help-icon" title="Number of Gibbs sampling iterations">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="iterations_per_temp" name="iterations_per_temp" value="10" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="initial_temp">
+                            <span class="label-with-help">
+                                Initial Monte Carlo temperature
+                                <span class="help-icon" title="Starting temperature for simulated annealing">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="initial_temp" name="initial_temp" value="5.0" step="0.1" min="0.1" max="20">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="temp_steps">
+                            <span class="label-with-help">
+                                Number of temperature steps
+                                <span class="help-icon" title="Number of cooling steps in simulated annealing">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="temp_steps" name="temp_steps" value="10" min="1" max="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="indel_interval">
+                            <span class="label-with-help">
+                                Interval between Indel moves
+                                <span class="help-icon" title="Frequency of insertion/deletion attempts">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="indel_interval" name="indel_interval" value="10" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="single_peptide_interval">
+                            <span class="label-with-help">
+                                Interval between Single Peptide moves
+                                <span class="help-icon" title="Frequency of single sequence updates">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="single_peptide_interval" name="single_peptide_interval" value="1" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phase_shift_interval">
+                            <span class="label-with-help">
+                                Interval between Phase Shift moves
+                                <span class="help-icon" title="Frequency of alignment shift attempts">?</span>
+                            </span>
+                        </label>
+                        <input type="number" id="phase_shift_interval" name="phase_shift_interval" value="1" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <span class="label-with-help">
+                                Background amino acid frequencies
+                                <span class="help-icon" title="Source for background amino acid distribution">?</span>
+                            </span>
+                        </label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="bg_freq" value="flat" checked> Flat
+                            </label>
+                            <label>
+                                <input type="radio" name="bg_freq" value="precalculated"> Pre-calculated (Uniprot)
+                            </label>
+                            <label>
+                                <input type="radio" name="bg_freq" value="from_data"> From data
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="p1_hydrophobic" name="p1_hydrophobic">
+                        <label for="p1_hydrophobic" style="margin-bottom: 0;">
+                            <span class="label-with-help">
+                                Preference for hydrophobic AAs at P1
+                                <span class="help-icon" title="Add bias for hydrophobic amino acids at position 1">?</span>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <span class="label-with-help">
+                                Sequence weighting type
+                                <span class="help-icon" title="Method for weighting similar sequences">?</span>
+                            </span>
+                        </label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="seq_weighting" value="heuristic" checked> Heuristic
+                            </label>
+                            <label>
+                                <input type="radio" name="seq_weighting" value="clustering"> Clustering
+                            </label>
+                            <label>
+                                <input type="radio" name="seq_weighting" value="none"> None
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">SUBMIT JOB</button>
+            
+            <div class="note">
+                <strong>Confidentiality:</strong> The sequences are kept confidential and will be deleted after processing.
+            </div>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <h3>Processing...</h3>
+            <p>Running GibbsCluster analysis. This may take several minutes depending on your data size.</p>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </div>
+    
+    <script>
+        // Collapsible section handler
+        document.querySelector('.collapsible').addEventListener('click', function() {
+            this.classList.toggle('active');
+            const content = document.getElementById('advancedOptions');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                this.textContent = '▼ VERY ADVANCED OPTIONS';
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                this.textContent = '▲ VERY ADVANCED OPTIONS';
+            }
+        });
+        
+        // Preset configurations
+        function loadPresetMHC1Same() {
+            document.getElementById('num_clusters').value = '5';
+            document.getElementById('motif_length').value = '9';
+            document.getElementById('max_deletion').value = '0';
+            document.getElementById('max_insertion').value = '0';
+            document.getElementById('use_trash').checked = true;
+        }
+        
+        function loadPresetMHC1Variable() {
+            document.getElementById('num_clusters').value = '5';
+            document.getElementById('motif_length').value = '9';
+            document.getElementById('max_deletion').value = '2';
+            document.getElementById('max_insertion').value = '2';
+            document.getElementById('use_trash').checked = true;
+        }
+        
+        function loadPresetMHC2() {
+            document.getElementById('num_clusters').value = '5';
+            document.getElementById('motif_length').value = '9';
+            document.getElementById('max_deletion').value = '3';
+            document.getElementById('max_insertion').value = '3';
+            document.getElementById('use_trash').checked = true;
+        }
+        
+        // Form submission
+        document.getElementById('gibbsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const submitBtn = e.target.querySelector('.submit-btn');
+            
+            // Show loading, hide previous results
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            results.innerHTML = '';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+                
+                // Display results
+                results.innerHTML = `
+                    <div class="success">
+                        ✓ Analysis completed successfully!
+                        <br><strong>Job:</strong> ${data.job_name}
+                    </div>
+                    
+                    ${data.command ? `
+                        <div class="output-section">
+                            <h3>Command executed:</h3>
+                            <pre>${data.command}</pre>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.stdout ? `
+                        <div class="output-section">
+                            <h3>Standard Output:</h3>
+                            <pre>${data.stdout}</pre>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.stderr ? `
+                        <div class="output-section">
+                            <h3>Messages:</h3>
+                            <pre>${data.stderr}</pre>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.files && data.files.length > 0 ? `
+                        <div class="output-section">
+                            <h3>Result Files:</h3>
+                            ${data.files.map(file => `
+                                <div style="margin-bottom: 25px;">
+                                    <h4 style="color: #2c5aa0; margin-bottom: 10px;">📄 ${file.name}</h4>
+                                    <pre>${file.content.substring(0, 2000)}${file.content.length > 2000 ? '\n\n... [Content truncated for display. Full content available in file] ...' : ''}</pre>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                results.style.display = 'block';
+                
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+                results.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
